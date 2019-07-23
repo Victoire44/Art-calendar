@@ -14,7 +14,7 @@ var cheerio = require("cheerio");
 var db = require("./models");
 
 var app = express();
-var PORT = 3000;
+var port = process.env.PORT || 3000;
 
 // Sets up the Express app to handle data parsing
 app.use(logger("dev"));
@@ -29,8 +29,8 @@ app.use(express.static("public"));
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars")
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/auctions";
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+var mongoUri = process.env.MONGODB_URI || "mongodb://localhost/auctions";
+mongoose.connect(mongoUri);
 
 //Routes
 
@@ -61,6 +61,8 @@ app.get("/scrape", function (req, res) {
                 });
         });
         res.send("Scrape Complete");
+    }).catch(function (err) {
+        console.error(err);
     });
 });
 
@@ -111,6 +113,6 @@ app.put("/articles/:id", function (req, res) {
 // });
 
 
-app.listen(PORT, function () {
-    console.log("App listening on PORT " + PORT);
+app.listen(port, function () {
+    console.log("App listening on port " + port);
 });
