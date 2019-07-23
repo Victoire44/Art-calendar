@@ -1,0 +1,80 @@
+{{>header home=false saved=true}}
+
+<div class="container" style="background:#faf2f2">
+    <div class="row">
+        {{#each articles}}
+        {{#if saved}}
+        <div class="article-wrap" data-aid="{{this._id}}">
+            <div class="col s12 m3">
+                <div class="card" style="height: 470px">
+                    <div class="card-image">
+                        <img src="{{this.media}}">
+                    </div>
+                    <div class="card-content">
+                        <p>{{this.title}}</p>
+                        <p>{{this.details}}</p>
+                        <a href="{{this.link}}">Article Link</a><br>
+                        <button class="unsave-btn" data-aid="{{this._id}}">Unsave</button>
+                        {{#if note}}
+                        <div class="note-wrap" data-nid="{{this-id}}">
+                            <p class="note-title">{{this.title}}</p>
+                            <p class="note-body">{{this.body}}</p>
+                            <button class="update-btn">Update</button>
+                            <button class="delete-btn">Delete</button>
+                        </div>
+                        {{else}}
+                        <button class="add-btn">Add a note</button>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+    </div>
+
+    <div class="note-wrap hide" data-nid="" data-aid="">
+        <h4>Article Notes</h4>
+        <form class="note-form">
+            <input type="text" id="title"><br>
+            <textarea id="body"></textarea><br>
+            <button class="update-note">Save</button>
+        </form>
+    </div>
+
+    {{#unless articles}}
+    <h3>No articles to display yet!</h3>
+    <a href="/">Go Scrape</a>
+    {{/unless}}
+
+
+    <script>
+        // Update a article by id from saved: false to saved: true
+        $(".unsave-btn").on("click", function (event) {
+            var articleId = $(event.target).data("aid")
+
+            var updateArticle = {
+                saved: false
+            }
+
+            // Communication with server to update an article
+            $.ajax({
+                url: `/articles/${articleId}`, //=> route dans le server 
+                type: "PUT",
+                data: updateArticle,
+                success: function (result) {
+                    if (result) {
+                        // check if result comes back as updated
+                        //remove saved article from the home page
+                        var parentElm = $(event.target).parent(".article-wrap");
+                        parentElm.remove()
+                    }
+                }
+            });
+        });
+
+        {{!-- $(".add-btn").on("click", function (event) {
+
+        }); --}}
+        
+    </script>
