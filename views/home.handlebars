@@ -1,0 +1,71 @@
+{{>header home=true saved=false}}
+<div class="container" style="background:#faf2f2">
+    <div class="row center">
+        <div class="col s12 m12">
+            <h3 style="margin: none">Sotheby's</h3>
+            <h4>upcoming auctions</h4>
+            <button id="scrape" class="btn">scrape</button>
+        </div>
+    </div>
+
+    <div class="row">
+        {{#each articles}}
+        {{#unless this.saved}}
+        <div class="article-wrap">
+            <div class="col s12 m3">
+                <div class="card" style="height: 450px">
+                    <div class="card-image">
+                        <img src="{{this.media}}">
+                    </div>
+                    <div class="card-content">
+                        <p>{{this.title}}</p>
+                        <p>{{this.details}}</p>
+                        <a href="{{this.link}}" target="_blank">View Auction</a>
+                        <button class="save-btn waves-effect teal white-text right"
+                            data-aid="{{this._id}}">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/unless}}
+        {{/each}}
+    </div>
+
+    {{#unless articles}}
+    <h3>No articles to display yet!</h3>
+    {{/unless}}
+</div>
+<script>
+    // Scrape a website for articles
+    $("#scrape").on("click", function () {
+        $.get("/scrape", function (response) {
+            console.log(response)
+            window.location.reload();
+        });
+    });
+
+    // Update a article by id from saved: false to saved: true
+    $(".save-btn").on("click", function (event) {
+        var articleId = $(event.target).data("aid")
+
+        var updateArticle = {
+            saved: true
+        }
+
+        // Communication with server to update an article
+        $.ajax({
+            url: `/articles/${articleId}`,
+            type: "PUT",
+            data: updateArticle,
+            success: function (result) {
+                if (result) {
+                    // check if result comes back as updated
+                    //remove saved article from the home page
+                    var parentElm = $(event.target).parent(".article-wrap");
+                    parentElm.remove()
+                }
+            }
+        });
+    });
+
+</script>
