@@ -29,11 +29,8 @@ app.use(express.static("public"));
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars")
 
-mongoose.connect("mongodb://localhost/auctions", { useNewUrlParser: true });
-
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/auctions";
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 //Routes
 
